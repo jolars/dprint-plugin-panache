@@ -28,11 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.94.1
-          targets: wasm32-unknown-unknown
+      - name: Add wasm target
+        run: rustup target add wasm32-unknown-unknown
 
       - name: Cache Rust artifacts
         uses: Swatinem/rust-cache@v2

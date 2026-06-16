@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-smoke:
+    name: Build wasm + parity smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Add wasm target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ci-wasm
+          workspaces: . -> target
+          prefix-key: "v1-rust"
+
+      - name: Build dprint plugin (catches panache-formatter API drift)
+        run: |
+          cargo build \
+            --release \
+            --target wasm32-unknown-unknown
+
+      - name: Install dprint
+        run: |
+          curl -fsSL https://dprint.dev/install.sh | sh -s -- --yes
+          echo "$HOME/.dprint/bin" >> "$GITHUB_PATH"
+
+      - name: Download latest panache CLI release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Only the `v*` stream carries CLI assets; pick the newest such release.
+          TAG="$(gh release list --repo jolars/panache --limit 50 \
+            --json tagName --jq '.[].tagName' | grep -E '^v[0-9]' | head -1)"
+          echo "Using panache CLI release: $TAG"
+          gh release download "$TAG" --repo jolars/panache \
+            --pattern 'panache-x86_64-unknown-linux-gnu.tar.gz' --dir cli
+          tar -xzf cli/panache-x86_64-unknown-linux-gnu.tar.gz -C cli
+          find cli -name panache -type f
+
+      - name: Parity + idempotency smoke test
+        run: |
+          set -euo pipefail
+          WASM="$PWD/target/wasm32-unknown-unknown/release/dprint_plugin_panache.wasm"
+          PANACHE="$(find "$PWD/cli" -name panache -type f | head -1)"
+          TMP="$(mktemp -d)"
+
+          printf '# Title\n\nSome   text   that  is  here.\n\n- a\n- b\n' \
+            > "$TMP/sample.md"
+          cat > "$TMP/dprint.json" <<EOF
+          {
+            "panache": {},
+            "plugins": ["$WASM"],
+            "includes": ["**/*.md"]
+          }
+          EOF
+
+          cp "$TMP/sample.md" "$TMP/dprint_out.md"
+          (cd "$TMP" && dprint fmt)
+          "$PANACHE" format < "$TMP/sample.md" > "$TMP/panache_out.md"
+
+          echo "=== parity diff (dprint plugin vs panache CLI) ==="
+          diff "$TMP/dprint_out.md" "$TMP/panache_out.md"
+          echo "parity OK"
+
+          echo "=== idempotency (re-run dprint fmt) ==="
+          cp "$TMP/dprint_out.md" "$TMP/before.md"
+          (cd "$TMP" && dprint fmt)
+          diff "$TMP/before.md" "$TMP/dprint_out.md"
+          echo "idempotent OK"
