@@ -84,3 +84,29 @@ jobs:
           (cd "$TMP" && dprint fmt)
           diff "$TMP/before.md" "$TMP/dprint_out.md"
           echo "idempotent OK"
+
+  versionary:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build-and-smoke
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    outputs:
+      release_created: ${{ steps.versionary.outputs.release_created }}
+      tag_name: ${{ steps.versionary.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Install Rust
+        run: rustup toolchain install
+
+      - id: versionary
+        uses: jolars/versionary@v0
+        with:
+          github-token: ${{ secrets.RELEASE_TOKEN }}
