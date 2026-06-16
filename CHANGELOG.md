@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.0](https://github.com/jolars/dprint-plugin-panache/compare/v0.2.0...v0.3.0) (2026-06-16)
+
+### Features
+- setup dprint wasm plugin ([`eda25ac`](https://github.com/jolars/dprint-plugin-panache/commit/eda25ac05e07a06e232206f22137a39fbc0e0288))
+
 ## [0.2.0](https://github.com/jolars/panache/compare/dprint-plugin-panache-v0.1.0...dprint-plugin-panache-v0.2.0) (2026-05-26)
 
 ### Features
