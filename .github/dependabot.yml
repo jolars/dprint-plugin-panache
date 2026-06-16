@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # Bump panache-formatter (and other crates) from crates.io. A new release of
+  # panache-formatter opens a PR here; CI (ci.yml) builds the wasm and runs the
+  # dprint-vs-panache parity smoke test so an API-incompatible bump fails the
+  # check instead of merging silently.
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "deps"
+    groups:
+      cargo:
+        patterns:
+          - "*"
+
+  # Keep the GitHub Actions used by the workflows current.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
