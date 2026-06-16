@@ -1,12 +1,12 @@
-use anyhow::{Result, anyhow};
 use dprint_core::configuration::{
     ConfigKeyMap, ConfigurationDiagnostic, GlobalConfiguration, get_unknown_property_diagnostics,
     get_value,
 };
 use dprint_core::generate_plugin_code;
 use dprint_core::plugins::{
-    CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, FormatResult, PluginInfo,
-    PluginResolveConfigurationResult, SyncFormatRequest, SyncHostFormatRequest, SyncPluginHandler,
+    CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, FormatError, FormatResult,
+    PluginInfo, PluginResolveConfigurationResult, SyncFormatRequest, SyncHostFormatRequest,
+    SyncPluginHandler,
 };
 use panache_formatter::Config;
 use panache_formatter::config::{
@@ -294,7 +294,7 @@ impl SyncPluginHandler<Configuration> for PanacheHandler {
     fn check_config_updates(
         &self,
         _message: CheckConfigUpdatesMessage,
-    ) -> Result<Vec<ConfigChange>> {
+    ) -> Result<Vec<ConfigChange>, FormatError> {
         Ok(Vec::new())
     }
 
@@ -304,7 +304,7 @@ impl SyncPluginHandler<Configuration> for PanacheHandler {
         _format_with_host: impl FnMut(SyncHostFormatRequest) -> FormatResult,
     ) -> FormatResult {
         let file_text = String::from_utf8(request.file_bytes)
-            .map_err(|e| anyhow!("input is not valid UTF-8: {e}"))?;
+            .map_err(|e| FormatError::from(format!("input is not valid UTF-8: {e}")))?;
 
         let panache_config = build_panache_config(request.config, request.file_path);
         let range = request.range.as_ref().map(|r| (r.start, r.end));
@@ -329,7 +329,7 @@ impl SyncPluginHandler<Configuration> for PanacheHandler {
                 } else {
                     "panache panicked while formatting".to_string()
                 };
-                Err(anyhow!("panache panicked: {message}"))
+                Err(FormatError::from(format!("panache panicked: {message}")))
             }
         }
     }
