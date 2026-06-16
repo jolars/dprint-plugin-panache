@@ -36,9 +36,7 @@ jobs:
             --target wasm32-unknown-unknown
 
       - name: Install dprint
-        run: |
-          curl -fsSL https://dprint.dev/install.sh | sh -s -- --yes
-          echo "$HOME/.dprint/bin" >> "$GITHUB_PATH"
+        run: cargo install --locked dprint
 
       - name: Download latest panache CLI release
         env:
