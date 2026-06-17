@@ -49,10 +49,13 @@ jobs:
       - name: Stage release artifact
         run: |
           mkdir -p dist
+          # The asset must be named `plugin.wasm`: that is the name the
+          # plugins.dprint.dev service expects when resolving
+          # `plugins.dprint.dev/jolars/panache-<tag>.wasm`.
           cp target/wasm32-unknown-unknown/release/dprint_plugin_panache.wasm \
-            dist/panache.wasm
+            dist/plugin.wasm
           cp schema.json dist/schema.json
-          (cd dist && sha256sum panache.wasm > panache.wasm.sha256)
+          (cd dist && sha256sum plugin.wasm > plugin.wasm.sha256)
           ls -la dist/
 
       - name: Upload artifact (for inspection)
@@ -60,8 +63,8 @@ jobs:
         with:
           name: panache-dprint-wasm
           path: |
-            dist/panache.wasm
-            dist/panache.wasm.sha256
+            dist/plugin.wasm
+            dist/plugin.wasm.sha256
             dist/schema.json
           if-no-files-found: error
 
@@ -71,8 +74,8 @@ jobs:
         run: |
           TAG="${{ github.ref_type == 'tag' && github.ref_name || inputs.tag }}"
           gh release upload --clobber "$TAG" \
-            dist/panache.wasm \
-            dist/panache.wasm.sha256 \
+            dist/plugin.wasm \
+            dist/plugin.wasm.sha256 \
             dist/schema.json
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -5,20 +5,26 @@ A [dprint](https://dprint.dev) Wasm plugin that wraps the
 Markdown (`.md`, `.Rmd`).
 
 It is released independently of the main Panache CLI. The plugin lives in its
-own repository so that its `panache.wasm` release asset does not interfere with
+own repository so that its `plugin.wasm` release asset does not interfere with
 the Panache CLI's GitHub release stream (the Zed extension resolves its download
 via `latest_github_release(require_assets: true)`, which would otherwise pick up
 this plugin's asset).
 
 ## Usage
 
-Add the plugin to your `dprint.json`:
+Add the plugin with the dprint CLI:
+
+```bash
+dprint config add jolars/panache
+```
+
+This adds a versioned, checksummed entry under `plugins` in your `dprint.json`:
 
 ```jsonc
 {
   "panache": {},
   "plugins": [
-    "https://github.com/jolars/dprint-plugin-panache/releases/latest/download/panache.wasm"
+    "https://plugins.dprint.dev/jolars/panache-x.x.x.wasm@<checksum>"
   ]
 }
 ```
@@ -58,7 +64,7 @@ cargo build --release --target wasm32-unknown-unknown
 ```
 
 The resulting `target/wasm32-unknown-unknown/release/dprint_plugin_panache.wasm`
-is published as `panache.wasm` on each GitHub release.
+is published as `plugin.wasm` on each GitHub release.
 
 ## License
 
