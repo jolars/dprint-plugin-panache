@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0](https://github.com/jolars/dprint-plugin-panache/compare/v0.3.0...v0.4.0) (2026-06-17)
+
+### Features
+- generate config schema from panache-formatter enums ([`fa8feb9`](https://github.com/jolars/dprint-plugin-panache/commit/fa8feb9a57674657f43ad4d734b5791f040e333c))
+- add a schema for the plugin ([`87b2f28`](https://github.com/jolars/dprint-plugin-panache/commit/87b2f28c415dd18591bf89e3dbfe82ad73d61fb2))
+
 ## [0.3.0](https://github.com/jolars/dprint-plugin-panache/compare/v0.2.0...v0.3.0) (2026-06-16)
 
 ### Features
