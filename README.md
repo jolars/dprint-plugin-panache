@@ -33,17 +33,20 @@ dprint fmt
 
 Configure under the `panache` key in `dprint.json`. Supported keys:
 
-| Key                  | Description                                              |
-| -------------------- | -------------------------------------------------------- |
-| `flavor`             | Pandoc, Quarto, RMarkdown, GFM, or CommonMark            |
-| `wrap`               | `reflow`, `preserve`, `sentence`, or `semantic`          |
-| `blankLines`         | Maximum consecutive blank lines                          |
-| `mathIndent`         | Indentation for display math content                     |
-| `mathDelimiterStyle` | Display-math delimiter style                             |
-| `tabStops`           | Tab stop width                                           |
-| `lineEnding`         | Line-ending style                                        |
-| `lineWidth`          | Maximum line width (dprint global, default 80)           |
-| `tabWidth`           | Indentation width (dprint global)                        |
+| Key                  | Values                                                               | Default     |
+| -------------------- | -------------------------------------------------------------------- | ----------- |
+| `flavor`             | `pandoc`, `quarto`, `rmarkdown`, `gfm`, `commonmark`, `multimarkdown` | `pandoc`    |
+| `wrap`               | `reflow`, `preserve`, `sentence`, `semantic`                         | `reflow`    |
+| `blankLines`         | `collapse`, `preserve`                                               | `collapse`  |
+| `mathIndent`         | integer (spaces to indent display-math content)                      | `2`         |
+| `mathDelimiterStyle` | `preserve`, `dollars`, `backslash`                                   | `preserve`  |
+| `tabStops`           | `normalize`, `preserve`                                              | `normalize` |
+| `lineEnding`         | `auto`, `lf`, `crlf`                                                 | `auto`      |
+| `lineWidth`          | integer (dprint global)                                              | `80`        |
+| `tabWidth`           | integer (dprint global)                                              | `4`         |
+
+Path-based flavor detection takes precedence over `flavor`: `.qmd` is always
+treated as Quarto and `.rmd`/`.rmarkdown` as R Markdown.
 
 ## Building
 

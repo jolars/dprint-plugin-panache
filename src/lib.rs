@@ -281,7 +281,7 @@ impl SyncPluginHandler<Configuration> for PanacheHandler {
             config_key: "panache".to_string(),
             help_url: "https://panache.bz".to_string(),
             config_schema_url: format!(
-                "https://plugins.dprint.dev/jolars/panache/{version}/schema.json"
+                "https://github.com/jolars/dprint-plugin-panache/releases/download/v{version}/schema.json"
             ),
             update_url: Some("https://plugins.dprint.dev/jolars/panache/latest.json".to_string()),
         }

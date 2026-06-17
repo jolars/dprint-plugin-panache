@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jolars/dprint-plugin-panache/releases/latest/download/schema.json",
+  "title": "Panache dprint plugin configuration",
+  "description": "Configuration for the Panache dprint Wasm plugin (Quarto, Pandoc, R Markdown, Markdown).",
+  "type": "object",
+  "properties": {
+    "flavor": {
+      "description": "Markdown flavor to parse and format. Path-based detection (.qmd -> quarto, .rmd/.rmarkdown -> rmarkdown) takes precedence over this value.",
+      "type": "string",
+      "enum": ["pandoc", "quarto", "rmarkdown", "gfm", "commonmark", "multimarkdown"],
+      "default": "pandoc"
+    },
+    "wrap": {
+      "description": "How to wrap prose text.",
+      "type": "string",
+      "enum": ["preserve", "reflow", "sentence", "semantic"],
+      "default": "reflow"
+    },
+    "blankLines": {
+      "description": "How to handle consecutive blank lines: keep them as written or collapse runs to a single blank line.",
+      "type": "string",
+      "enum": ["preserve", "collapse"],
+      "default": "collapse"
+    },
+    "mathIndent": {
+      "description": "Number of spaces used to indent display-math content.",
+      "type": "integer",
+      "minimum": 0,
+      "default": 2
+    },
+    "mathDelimiterStyle": {
+      "description": "Display-math delimiter style.",
+      "type": "string",
+      "enum": ["preserve", "dollars", "backslash"],
+      "default": "preserve"
+    },
+    "tabStops": {
+      "description": "How to handle tab characters used as indentation.",
+      "type": "string",
+      "enum": ["normalize", "preserve"],
+      "default": "normalize"
+    },
+    "lineEnding": {
+      "description": "Line-ending style for formatted output.",
+      "type": "string",
+      "enum": ["auto", "lf", "crlf"],
+      "default": "auto"
+    },
+    "lineWidth": {
+      "description": "Maximum line width before wrapping. Defaults to dprint's global lineWidth, or 80 if unset.",
+      "type": "integer",
+      "minimum": 1,
+      "default": 80
+    },
+    "tabWidth": {
+      "description": "Number of spaces per indentation level. Defaults to dprint's global indentWidth, or 4 if unset.",
+      "type": "integer",
+      "minimum": 1,
+      "default": 4
+    }
+  },
+  "additionalProperties": false
+}
