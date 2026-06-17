@@ -2,6 +2,7 @@ use dprint_core::configuration::{
     ConfigKeyMap, ConfigurationDiagnostic, GlobalConfiguration, get_unknown_property_diagnostics,
     get_value,
 };
+#[cfg(target_arch = "wasm32")]
 use dprint_core::generate_plugin_code;
 use dprint_core::plugins::{
     CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, FormatError, FormatResult,
@@ -13,7 +14,8 @@ use panache_formatter::config::{
     BlankLines, Flavor, FormatterExtensions, LineEnding, MathDelimiterStyle, ParserExtensions,
     TabStopMode, WrapMode,
 };
-use serde::Serialize;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 const FILE_EXTENSIONS: &[&str] = &[
     "md",
@@ -27,17 +29,45 @@ const FILE_EXTENSIONS: &[&str] = &[
     "mkd",
 ];
 
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Configuration {
+    /// Markdown flavor to parse and format against. Path-based detection
+    /// (`.qmd` -> Quarto, `.rmd`/`.rmarkdown` -> R Markdown) takes precedence
+    /// over this value.
+    #[serde(default)]
+    #[schemars(with = "Flavor")]
     flavor: String,
+    /// Maximum line width before wrapping. Defaults to dprint's global
+    /// `lineWidth`, or 80 if unset.
+    #[serde(default)]
     line_width: u32,
+    /// How to wrap prose text.
+    #[serde(default)]
+    #[schemars(with = "WrapMode")]
     wrap: String,
+    /// How to handle consecutive blank lines.
+    #[serde(default)]
+    #[schemars(with = "BlankLines")]
     blank_lines: String,
+    /// Number of spaces used to indent display-math content.
+    #[serde(default)]
     math_indent: u32,
+    /// Display-math delimiter style.
+    #[serde(default)]
+    #[schemars(with = "MathDelimiterStyle")]
     math_delimiter_style: String,
+    /// Number of spaces per indentation level. Defaults to dprint's global
+    /// `indentWidth`, or 4 if unset.
+    #[serde(default)]
     tab_width: u32,
+    /// How to handle tab characters used as indentation.
+    #[serde(default)]
+    #[schemars(with = "TabStopMode")]
     tab_stops: String,
+    /// Line-ending style for formatted output.
+    #[serde(default)]
+    #[schemars(with = "LineEnding")]
     line_ending: String,
 }
 
@@ -335,4 +365,80 @@ impl SyncPluginHandler<Configuration> for PanacheHandler {
     }
 }
 
+#[cfg(target_arch = "wasm32")]
 generate_plugin_code!(PanacheHandler, PanacheHandler::new());
+
+#[cfg(test)]
+mod schema_tests {
+    use super::*;
+
+    const SCHEMA_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/schema.json");
+
+    /// Generate the published config schema. The enum-valued fields borrow
+    /// their schemas from `panache_formatter`'s config enums via
+    /// `#[schemars(with = ...)]`, so the accepted values stay in lockstep with
+    /// the formatter rather than being hand-maintained here.
+    fn generate() -> String {
+        let mut json = serde_json::to_string_pretty(&schemars::schema_for!(Configuration)).unwrap();
+        json.push('\n');
+        json
+    }
+
+    /// The committed `schema.json` is the artifact uploaded with each release
+    /// and pointed at by `config_schema_url`. It must match what the current
+    /// code generates. Regenerate after a config change (or a
+    /// `panache-formatter` bump that adds a flavor/mode) with:
+    ///
+    /// ```sh
+    /// UPDATE_SCHEMA=1 cargo test
+    /// ```
+    #[test]
+    fn committed_schema_is_in_sync() {
+        let generated = generate();
+        if std::env::var_os("UPDATE_SCHEMA").is_some() {
+            std::fs::write(SCHEMA_PATH, &generated).unwrap();
+            return;
+        }
+        let committed = std::fs::read_to_string(SCHEMA_PATH).unwrap();
+        assert_eq!(
+            committed, generated,
+            "schema.json is out of date; regenerate with `UPDATE_SCHEMA=1 cargo test`"
+        );
+    }
+
+    /// Guard against a `panache-formatter` change silently flipping the wire
+    /// values to PascalCase (or otherwise drifting from what `parse_*` accepts).
+    #[test]
+    fn enum_fields_use_lowercase_wire_values() {
+        let schema = generate();
+        for value in [
+            "pandoc",
+            "quarto",
+            "rmarkdown",
+            "gfm",
+            "commonmark",
+            "multimarkdown",
+            "reflow",
+            "sentence",
+            "semantic",
+            "collapse",
+            "dollars",
+            "backslash",
+            "normalize",
+            "auto",
+            "lf",
+            "crlf",
+        ] {
+            assert!(
+                schema.contains(&format!("\"{value}\"")),
+                "expected lowercase wire value {value:?} in schema:\n{schema}"
+            );
+        }
+        for pascal in ["\"Reflow\"", "\"Pandoc\"", "\"Collapse\"", "\"Backslash\""] {
+            assert!(
+                !schema.contains(pascal),
+                "PascalCase variant {pascal} leaked into schema:\n{schema}"
+            );
+        }
+    }
+}

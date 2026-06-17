@@ -1,64 +1,146 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jolars/dprint-plugin-panache/releases/latest/download/schema.json",
-  "title": "Panache dprint plugin configuration",
-  "description": "Configuration for the Panache dprint Wasm plugin (Quarto, Pandoc, R Markdown, Markdown).",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Configuration",
   "type": "object",
   "properties": {
     "flavor": {
-      "description": "Markdown flavor to parse and format. Path-based detection (.qmd -> quarto, .rmd/.rmarkdown -> rmarkdown) takes precedence over this value.",
-      "type": "string",
-      "enum": ["pandoc", "quarto", "rmarkdown", "gfm", "commonmark", "multimarkdown"],
-      "default": "pandoc"
+      "description": "Markdown flavor to parse and format against. Path-based detection\n(`.qmd` -> Quarto, `.rmd`/`.rmarkdown` -> R Markdown) takes precedence\nover this value.",
+      "$ref": "#/$defs/Flavor",
+      "default": ""
+    },
+    "lineWidth": {
+      "description": "Maximum line width before wrapping. Defaults to dprint's global\n`lineWidth`, or 80 if unset.",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0,
+      "default": 0
     },
     "wrap": {
       "description": "How to wrap prose text.",
-      "type": "string",
-      "enum": ["preserve", "reflow", "sentence", "semantic"],
-      "default": "reflow"
+      "$ref": "#/$defs/WrapMode",
+      "default": ""
     },
     "blankLines": {
-      "description": "How to handle consecutive blank lines: keep them as written or collapse runs to a single blank line.",
-      "type": "string",
-      "enum": ["preserve", "collapse"],
-      "default": "collapse"
+      "description": "How to handle consecutive blank lines.",
+      "$ref": "#/$defs/BlankLines",
+      "default": ""
     },
     "mathIndent": {
       "description": "Number of spaces used to indent display-math content.",
       "type": "integer",
+      "format": "uint32",
       "minimum": 0,
-      "default": 2
+      "default": 0
     },
     "mathDelimiterStyle": {
       "description": "Display-math delimiter style.",
-      "type": "string",
-      "enum": ["preserve", "dollars", "backslash"],
-      "default": "preserve"
+      "$ref": "#/$defs/MathDelimiterStyle",
+      "default": ""
+    },
+    "tabWidth": {
+      "description": "Number of spaces per indentation level. Defaults to dprint's global\n`indentWidth`, or 4 if unset.",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0,
+      "default": 0
     },
     "tabStops": {
       "description": "How to handle tab characters used as indentation.",
-      "type": "string",
-      "enum": ["normalize", "preserve"],
-      "default": "normalize"
+      "$ref": "#/$defs/TabStopMode",
+      "default": ""
     },
     "lineEnding": {
       "description": "Line-ending style for formatted output.",
-      "type": "string",
-      "enum": ["auto", "lf", "crlf"],
-      "default": "auto"
-    },
-    "lineWidth": {
-      "description": "Maximum line width before wrapping. Defaults to dprint's global lineWidth, or 80 if unset.",
-      "type": "integer",
-      "minimum": 1,
-      "default": 80
-    },
-    "tabWidth": {
-      "description": "Number of spaces per indentation level. Defaults to dprint's global indentWidth, or 4 if unset.",
-      "type": "integer",
-      "minimum": 1,
-      "default": 4
+      "$ref": "#/$defs/LineEnding",
+      "default": ""
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "Flavor": {
+      "description": "Markdown flavor to parse and format against.",
+      "type": "string",
+      "enum": [
+        "pandoc",
+        "quarto",
+        "rmarkdown",
+        "gfm",
+        "common-mark",
+        "commonmark",
+        "multimarkdown"
+      ]
+    },
+    "WrapMode": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "preserve",
+            "reflow",
+            "sentence"
+          ]
+        },
+        {
+          "description": "Preserve existing soft line breaks AND add breaks at sentence\nboundaries (semantic line breaks; see <https://sembr.org/>).",
+          "type": "string",
+          "const": "semantic"
+        }
+      ]
+    },
+    "BlankLines": {
+      "oneOf": [
+        {
+          "description": "Preserve original blank lines (any number)",
+          "type": "string",
+          "const": "preserve"
+        },
+        {
+          "description": "Collapse multiple consecutive blank lines to a single blank line",
+          "type": "string",
+          "const": "collapse"
+        }
+      ]
+    },
+    "MathDelimiterStyle": {
+      "oneOf": [
+        {
+          "description": "Preserve original delimiter style (\\(...\\) stays \\(...\\), $...$ stays $...$)",
+          "type": "string",
+          "const": "preserve"
+        },
+        {
+          "description": "Normalize all to dollar syntax ($...$ and $$...$$)",
+          "type": "string",
+          "const": "dollars"
+        },
+        {
+          "description": "Normalize all to backslash syntax (\\(...\\) and \\[...\\])",
+          "type": "string",
+          "const": "backslash"
+        }
+      ]
+    },
+    "TabStopMode": {
+      "oneOf": [
+        {
+          "description": "Normalize tabs to spaces (4-column tab stop).",
+          "type": "string",
+          "const": "normalize"
+        },
+        {
+          "description": "Preserve tabs in literal code spans/blocks.",
+          "type": "string",
+          "const": "preserve"
+        }
+      ]
+    },
+    "LineEnding": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "lf",
+        "crlf"
+      ]
+    }
+  }
 }
