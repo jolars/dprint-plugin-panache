@@ -17,7 +17,7 @@ jobs:
     name: Build wasm + parity smoke test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Add wasm target
         run: rustup target add wasm32-unknown-unknown
@@ -95,7 +95,7 @@ jobs:
       release_created: ${{ steps.versionary.outputs.release_created }}
       tag_name: ${{ steps.versionary.outputs.tag_name }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
