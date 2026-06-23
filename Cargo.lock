@@ -25,9 +25,9 @@ checksum = "7704b5fdd17b18ae31c4c1da5a2e0305a2bf17b5249300a9ee9ed7b72114c636"
 
 [[package]]
 name = "dprint-core"
-version = "0.68.1"
+version = "0.68.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8698cce2d4defd77683dd360c67351643523c4f87ad177b6574978d0f05e4836"
+checksum = "7eb1dc2cac6929b352e64ee15d45cecb990f081eebbec99be0444edb01e642a8"
 dependencies = [
  "bumpalo",
  "hashbrown 0.15.5",
@@ -129,9 +129,9 @@ checksum = "88904434abc2901f197fe8cc55f0445e7ded921dba5911dad2e2b39b48e663c4"
 
 [[package]]
 name = "panache-formatter"
-version = "0.14.0"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f607a837f03e51c9d53101d24455c94ce915c7d6836a79f55494da16ba0b396"
+checksum = "9e608047824454e3a93b91370eea5c47af50ed29e978ebdc7109f829ed130562"
 dependencies = [
  "log",
  "panache-parser",
@@ -143,12 +143,13 @@ dependencies = [
 
 [[package]]
 name = "panache-parser"
-version = "0.17.2"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "daf9f995d72067988f134301af4946a9153f91149f300c505abd414f785bc2ea"
+checksum = "96b9b9a19856e7052ed89c9b832d02f9aca1a1c5642a529cb48d3e46c38247c4"
 dependencies = [
  "entities",
  "log",
+ "memchr",
  "rowan",
  "schemars",
  "serde",
