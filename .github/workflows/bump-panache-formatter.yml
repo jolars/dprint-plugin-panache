@@ -1,0 +1,137 @@
+name: Bump panache-formatter
+
+# Dedicated watcher for the panache-formatter crate. For this plugin a
+# formatter bump is not a chore --- it *is* the product changing --- so it must
+# land as a releasable conventional commit (`feat:`/`fix:`) that versionary
+# picks up, unlike the `deps:` PRs dependabot opens for the tooling crates.
+# panache-formatter is therefore ignored in dependabot.yml so the two do not
+# race.
+#
+# The PR is opened with RELEASE_TOKEN (not GITHUB_TOKEN) on purpose: PRs created
+# with the default token do not trigger other workflows, so CI (and its parity
+# smoke test) would never run on the bump.
+
+on:
+  schedule:
+    # Daily; a formatter release reaches users within a day instead of up to a
+    # week (the dependabot cadence).
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Open bump PR if a newer panache-formatter exists
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Install Rust
+        run: rustup toolchain install
+
+      - name: Determine current and latest versions
+        id: versions
+        run: |
+          set -euo pipefail
+
+          CURRENT="$(grep -A1 'name = "panache-formatter"' Cargo.lock \
+            | grep '^version' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
+
+          LATEST="$(curl -sf \
+            -H 'User-Agent: dprint-plugin-panache-bump-bot (johan@jolars.co)' \
+            https://crates.io/api/v1/crates/panache-formatter \
+            | jq -r '.crate.max_stable_version')"
+
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Current: $CURRENT | Latest: $LATEST"
+
+          # Newer only if latest sorts above current and they differ.
+          NEWEST="$(printf '%s\n%s\n' "$CURRENT" "$LATEST" | sort -V | tail -1)"
+          if [ "$CURRENT" != "$LATEST" ] && [ "$NEWEST" = "$LATEST" ]; then
+            echo "newer=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "newer=false" >> "$GITHUB_OUTPUT"
+            echo "Already up to date."
+          fi
+
+      - name: Check for existing bump branch
+        id: branch
+        if: steps.versions.outputs.newer == 'true'
+        env:
+          LATEST: ${{ steps.versions.outputs.latest }}
+        run: |
+          set -euo pipefail
+          BRANCH="deps/panache-formatter-$LATEST"
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Branch $BRANCH already exists; nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update dependency and regenerate schema
+        id: update
+        if: >-
+          steps.versions.outputs.newer == 'true' &&
+          steps.branch.outputs.exists == 'false'
+        env:
+          CURRENT: ${{ steps.versions.outputs.current }}
+          LATEST: ${{ steps.versions.outputs.latest }}
+        run: |
+          set -euo pipefail
+
+          # Bump the requirement (keeping the `schema` feature) and the lockfile.
+          cargo add panache-formatter@"$LATEST" --features schema
+
+          # Keep the committed schema.json in step with the formatter's config
+          # (new enum values, etc.); the schema_tests assert it is in sync.
+          UPDATE_SCHEMA=1 cargo test
+
+          # A same-minor change is a passthrough patch; a minor/major change can
+          # alter accepted config or formatting, so treat it as a feature.
+          if [ "${CURRENT%.*}" = "${LATEST%.*}" ]; then
+            echo "type=fix" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=feat" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and open PR
+        if: >-
+          steps.versions.outputs.newer == 'true' &&
+          steps.branch.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          BRANCH: ${{ steps.branch.outputs.name }}
+          CURRENT: ${{ steps.versions.outputs.current }}
+          LATEST: ${{ steps.versions.outputs.latest }}
+          TYPE: ${{ steps.update.outputs.type }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git switch -c "$BRANCH"
+          git add Cargo.toml Cargo.lock schema.json
+          git commit -m "$TYPE: bump panache-formatter to $LATEST"
+          git push --set-upstream origin "$BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "$TYPE: bump panache-formatter to $LATEST" \
+            --body "Bumps \`panache-formatter\` from \`$CURRENT\` to \`$LATEST\`.
+
+          Opened by the \`bump-panache-formatter\` watcher. This is a releasable
+          commit (\`$TYPE:\`) so versionary cuts a plugin release once merged.
+          CI runs the dprint-vs-panache parity smoke test on this PR."

@@ -1,9 +1,13 @@
 version: 2
 updates:
-  # Bump panache-formatter (and other crates) from crates.io. A new release of
-  # panache-formatter opens a PR here; CI (ci.yml) builds the wasm and runs the
-  # dprint-vs-panache parity smoke test so an API-incompatible bump fails the
-  # check instead of merging silently.
+  # Bump the tooling crates (serde, dprint-core, schemars, etc.) from crates.io
+  # as chores. panache-formatter is deliberately excluded: for this plugin a
+  # formatter bump is the product changing, so the dedicated
+  # `bump-panache-formatter` workflow opens it as a releasable `feat:`/`fix:`
+  # commit that versionary releases on --- a `deps:` PR here would not trigger a
+  # release. CI (ci.yml) builds the wasm and runs the dprint-vs-panache parity
+  # smoke test on every bump PR so an API-incompatible change fails the check
+  # instead of merging silently.
   - package-ecosystem: cargo
     directory: "/"
     schedule:
@@ -14,6 +18,8 @@ updates:
       cargo:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "panache-formatter"
 
   # Keep the GitHub Actions used by the workflows current.
   - package-ecosystem: github-actions
