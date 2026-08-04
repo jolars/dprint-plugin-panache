@@ -67,7 +67,9 @@
         "gfm",
         "common-mark",
         "commonmark",
-        "multimarkdown"
+        "multimarkdown",
+        "mdsvex",
+        "myst"
       ]
     },
     "WrapMode": {
