@@ -45,7 +45,7 @@ jobs:
           CURRENT="$(grep -A1 'name = "panache-formatter"' Cargo.lock \
             | grep '^version' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
 
-          LATEST="$(curl -sf \
+          LATEST="$(curl -sSf \
             -H 'User-Agent: dprint-plugin-panache-bump-bot (johan@jolars.co)' \
             https://crates.io/api/v1/crates/panache-formatter \
             | jq -r '.crate.max_stable_version')"
