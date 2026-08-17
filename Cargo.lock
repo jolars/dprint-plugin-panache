@@ -144,9 +144,9 @@ dependencies = [
 
 [[package]]
 name = "panache-formatter"
-version = "0.20.5"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a086b45ca01fec7f61aea8aab718bae8f26a3b951976e4d2744508525f9ae13"
+checksum = "8a08eba65886041bc5b8de0c60843694c2a0cfc098f3ad833c7cff48fc42cb5b"
 dependencies = [
  "log",
  "panache-parser",
@@ -158,9 +158,9 @@ dependencies = [
 
 [[package]]
 name = "panache-parser"
-version = "0.25.0"
+version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "015e09b90a1f7bee2145a864afe3ae679503ffad78516dd7a136727d14851544"
+checksum = "59f87a1b2daa380a20fcb5eea666683d831553cce973e4fe3a800251fee15939"
 dependencies = [
  "entities",
  "log",
