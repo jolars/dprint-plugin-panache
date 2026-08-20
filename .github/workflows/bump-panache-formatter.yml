@@ -8,7 +8,8 @@ name: Bump panache-formatter
 # race.
 #
 # The built-in token makes GitHub Actions the PR author. Assigning the PR to the
-# repository owner ensures the automated update produces a notification.
+# repository owner ensures the automated update produces a notification; its
+# PR-triggered CI run then waits for the owner to approve it.
 
 on:
   schedule:
@@ -27,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
       pull-requests: write
     steps:
       - uses: actions/checkout@v7
