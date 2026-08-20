@@ -7,9 +7,8 @@ name: Bump panache-formatter
 # panache-formatter is therefore ignored in dependabot.yml so the two do not
 # race.
 #
-# The PR is opened with RELEASE_TOKEN (not GITHUB_TOKEN) on purpose: PRs created
-# with the default token do not trigger other workflows, so CI (and its parity
-# smoke test) would never run on the bump.
+# The built-in token makes GitHub Actions the PR author. Assigning the PR to the
+# repository owner ensures the automated update produces a notification.
 
 on:
   schedule:
@@ -31,8 +30,6 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v7
-        with:
-          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Install Rust
         run: rustup toolchain install
@@ -110,7 +107,7 @@ jobs:
           steps.versions.outputs.newer == 'true' &&
           steps.branch.outputs.exists == 'false'
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ steps.branch.outputs.name }}
           CURRENT: ${{ steps.versions.outputs.current }}
           LATEST: ${{ steps.versions.outputs.latest }}
@@ -129,6 +126,7 @@ jobs:
           gh pr create \
             --base main \
             --head "$BRANCH" \
+            --assignee jolars \
             --title "$TYPE: bump panache-formatter to $LATEST" \
             --body "Bumps \`panache-formatter\` from \`$CURRENT\` to \`$LATEST\`.
 
