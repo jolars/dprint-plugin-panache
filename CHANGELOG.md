@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.0](https://github.com/jolars/dprint-plugin-panache/compare/v0.6.2...v0.7.0) (2026-09-01)
+
+### Features
+- bump panache-formatter to 0.23.0 (#27) ([`cd66cd2`](https://github.com/jolars/dprint-plugin-panache/commit/cd66cd207f598366124247225219b2d6246f01bc))
+- bump panache-formatter to 0.22.0 (#25) ([`bfc6202`](https://github.com/jolars/dprint-plugin-panache/commit/bfc6202aff3abfd5ba33fefb577413d1b9214a20))
+
 ## [0.6.2](https://github.com/jolars/dprint-plugin-panache/compare/v0.6.1...v0.6.2) (2026-08-25)
 
 ### Bug Fixes
