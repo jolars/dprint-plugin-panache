@@ -14,7 +14,7 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 dprint-core = { version = "0.69", features = ["wasm"] }
-panache-formatter = { version = "0.24.0", features = ["schema"] }
+panache-formatter = { version = "0.24.1", features = ["schema"] }
 schemars = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
