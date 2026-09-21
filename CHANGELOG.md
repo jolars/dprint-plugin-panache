@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.0](https://github.com/jolars/dprint-plugin-panache/compare/v0.8.1...v1.0.0) (2026-09-21)
+
+### Breaking changes
+- update devenv and bump to 1.0.0 ([`6652b42`](https://github.com/jolars/dprint-plugin-panache/commit/6652b4214d20e84f5cc22cbfd5a67e43e4f04b26))
+
 ## [0.8.1](https://github.com/jolars/dprint-plugin-panache/compare/v0.8.0...v0.8.1) (2026-09-16)
 
 ### Bug Fixes
