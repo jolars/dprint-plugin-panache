@@ -47,7 +47,7 @@ dependencies = [
 
 [[package]]
 name = "dprint-plugin-panache"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
  "dprint-core",
  "panache-formatter",
