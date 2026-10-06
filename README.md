@@ -1,8 +1,8 @@
 # dprint-plugin-panache
 
 A [dprint](https://dprint.dev) Wasm plugin that wraps the
-[Panache](https://panache.bz) formatter for Quarto (`.qmd`), Pandoc, and
-Markdown (`.md`, `.Rmd`).
+[Panache](https://panache.bz) formatter for Quarto and other Markdown flavors,
+including Pandoc Markdown and R Markdown.
 
 It is released independently of the main Panache CLI. The plugin lives in its
 own repository so that its `plugin.wasm` release asset does not interfere with

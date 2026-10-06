@@ -7,7 +7,7 @@ code in this repository.
 
 A thin [dprint](https://dprint.dev) Wasm plugin that wraps the
 [`panache-formatter`](https://crates.io/crates/panache-formatter) crate so the
-Panache formatter (Quarto, Pandoc, R Markdown, Markdown) can run inside dprint.
+Panache formatter (Quarto and other Markdown flavors) can run inside dprint.
 The plugin holds no formatting logic of its own; it only maps dprint
 configuration into a `panache_formatter::Config` and forwards the file text.
 

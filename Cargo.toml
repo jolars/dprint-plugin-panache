@@ -6,7 +6,7 @@ license = "MIT"
 repository = "https://github.com/jolars/dprint-plugin-panache"
 homepage = "https://panache.bz"
 authors = ["Johan Larsson <johan@jolars.co>"]
-description = "dprint Wasm plugin that wraps the Panache formatter for Quarto, Pandoc, and Markdown."
+description = "dprint Wasm plugin for Quarto and other Markdown flavors, powered by Panache"
 publish = false
 
 [lib]
