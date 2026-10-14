@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.2](https://github.com/jolars/dprint-plugin-panache/compare/v1.3.1...v1.3.2) (2026-10-14)
+
+### Bug Fixes
+
+- accept dprint settings in config schema ([`f4a1123`](https://github.com/jolars/dprint-plugin-panache/commit/f4a1123683d42ccad654d12577c4ef4a81161fb0)), fixes [#39](https://github.com/jolars/dprint-plugin-panache/issues/39)
+
 ## [1.3.1](https://github.com/jolars/dprint-plugin-panache/compare/v1.3.0...v1.3.1) (2026-10-14)
 
 ### Bug Fixes
