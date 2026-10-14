@@ -53,6 +53,38 @@
       "description": "Line-ending style for formatted output.",
       "$ref": "#/$defs/LineEnding",
       "default": ""
+    },
+    "associations": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "description": "File patterns to associate with this plugin."
+    },
+    "locked": {
+      "description": "Whether this configuration may not be overridden or extended.",
+      "type": "boolean"
+    },
+    "overrides": {
+      "description": "Configuration overrides for matching files, applied in order.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/DprintOverride"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DprintOverride"
+          }
+        }
+      ]
     }
   },
   "additionalProperties": false,
@@ -143,6 +175,81 @@
         "lf",
         "crlf"
       ]
+    },
+    "DprintOverride": {
+      "type": "object",
+      "properties": {
+        "flavor": {
+          "description": "Markdown flavor to parse and format against. Path-based detection\n(`.qmd` -> Quarto, `.rmd`/`.rmarkdown` -> R Markdown) takes precedence\nover this value.",
+          "$ref": "#/$defs/Flavor",
+          "default": ""
+        },
+        "lineWidth": {
+          "description": "Maximum line width before wrapping. Defaults to dprint's global\n`lineWidth`, or 80 if unset.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 0
+        },
+        "wrap": {
+          "description": "How to wrap prose text.",
+          "$ref": "#/$defs/WrapMode",
+          "default": ""
+        },
+        "blankLines": {
+          "description": "How to handle consecutive blank lines.",
+          "$ref": "#/$defs/BlankLines",
+          "default": ""
+        },
+        "mathIndent": {
+          "description": "Number of spaces used to indent display-math content.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 0
+        },
+        "mathDelimiterStyle": {
+          "description": "Display-math delimiter style.",
+          "$ref": "#/$defs/MathDelimiterStyle",
+          "default": ""
+        },
+        "tabWidth": {
+          "description": "Number of spaces per indentation level. Defaults to dprint's global\n`indentWidth`, or 4 if unset.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 0
+        },
+        "tabStops": {
+          "description": "How to handle tab characters used as indentation.",
+          "$ref": "#/$defs/TabStopMode",
+          "default": ""
+        },
+        "lineEnding": {
+          "description": "Line-ending style for formatted output.",
+          "$ref": "#/$defs/LineEnding",
+          "default": ""
+        },
+        "files": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "files"
+      ],
+      "minProperties": 2,
+      "additionalProperties": false
     }
   }
 }
