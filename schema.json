@@ -101,7 +101,8 @@
         "commonmark",
         "multimarkdown",
         "mdsvex",
-        "myst"
+        "myst",
+        "hugo"
       ]
     },
     "WrapMode": {
