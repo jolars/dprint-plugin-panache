@@ -310,6 +310,7 @@ impl SyncPluginHandler<Configuration> for PanacheHandler {
             name: env!("CARGO_PKG_NAME").to_string(),
             version: version.clone(),
             config_key: "panache".to_string(),
+            supports_range_formatting: Some(true),
             help_url: "https://panache.bz".to_string(),
             config_schema_url: format!(
                 "https://github.com/jolars/dprint-plugin-panache/releases/download/v{version}/schema.json"
