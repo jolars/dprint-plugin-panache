@@ -97,6 +97,7 @@
         "quarto",
         "rmarkdown",
         "gfm",
+        "jupyter",
         "common-mark",
         "commonmark",
         "multimarkdown",
