@@ -97,12 +97,14 @@
         "quarto",
         "rmarkdown",
         "gfm",
+        "jupyter",
         "common-mark",
         "commonmark",
         "multimarkdown",
         "mdsvex",
         "myst",
-        "hugo"
+        "hugo",
+        "vitepress"
       ]
     },
     "WrapMode": {
